@@ -1,23 +1,31 @@
+/*******************************************************************************
+ * name: core.c
+ * author: godynezz
+ * description: core functions
+ ******************************************************************************/
 #include "core.h"
 
 static string HELP_MESSAGE =
-    "yassh Yet Another Stupid Shell is a stupid shell made for fun\n"
-    "This shell is not secure and it won't be never. Do not use in\n"
-    "production!\n"
-    "the prompt is a mouse by the way ~(8:>\n"
-
-    "author: %s\n"
-    "version: %s\n\n"
-
-    "buildin commands :\n"
+    "\n\tversion: %s\n"
     "\ttype [command] - print the type of command\n"
-    "\techo [string]  - print everythin you pass to it\n"
+    "\techo [string]  - print everything you pass to it\n"
     "\texit [n]       - exit the shell with status n\n"
     "\tcls            - clear the screen\n"
-    "\thelp           - print this help message\n"
+    "\thelp [opt]     - print this help message opt is optional and can be\n"
+    "\t                 `about` or just blank \n"
+
     "\tpwd            - print working directory\n"
     "\t?              - print the last exit status\n"
-    "\tcd [dir]       - change woring directory to dir\n\n";
+    "\tcd [dir]       - change working directory to dir\n\n";
+
+static string ABOUT =
+    "\nyassh (Yet Another Stupid Shell) is a simple shell made for fun\n"
+    "an learning porpose it is not secure and I don't plan to make it be,\n"
+    "Do not use in production! \n\n"
+    "This shell can handle basic stuff, builtins and extenal programs\n"
+    "on system PATH and relative to working directory, and the most important\n"
+    "the prompt is a mouse. ~(8:>\n"
+    "author: %s\n\n";
 
 static command builtins[] = {
     {"pwd", &wdir},  {"cd", &cd},   {"exit", &shell_exit}, {"type", &type},
@@ -150,10 +158,12 @@ void cls(string *tokens) {
 
 void help(string *tokens) {
   if (tokens[1]) {
-    printf("too many arguments\n");
-    return;
-  }
-  printf(HELP_MESSAGE, AUTHOR, VERSION);
+    if (!strcmp(tokens[1], "about")) {
+      printf(ABOUT, AUTHOR);
+      return;
+    }
+  } else
+    printf(HELP_MESSAGE, VERSION);
 }
 
 void wdir(string *tokens) {

@@ -12,9 +12,9 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define VERSION "0.2.0"
+#define VERSION "x.x.x"
 #define AUTHOR "godynezz"
-#define PROMPT "~(8:> " // that is a mouse BTW
+#define PROMPT "\033[30m~(8:> \033[0m"
 #define MAXBUF 2048
 #define MAXARG 128
 
