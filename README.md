@@ -1,6 +1,6 @@
 # yassh - Yet Another Stupid Shell
 
-yassh is a simple shell created for fun and educational purposes. It is not secure and should not be used in production environments.
+yassh is a simple shell created for fun and educational purposes.
 
 ## download
 
