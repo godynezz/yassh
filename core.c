@@ -11,12 +11,13 @@ static string HELP_MESSAGE =
     "\techo [string]  - print everything you pass to it\n"
     "\texit [n]       - exit the shell with status n\n"
     "\tcls            - clear the screen\n"
-    "\thelp [opt]     - print this help message opt is optional and can be\n"
+    "\thelp [?opt]    - print this help message opt is optional and can be\n"
     "\t                 `about` or just blank \n"
 
     "\tpwd            - print working directory\n"
     "\t?              - print the last exit status\n"
-    "\tcd [dir]       - change working directory to dir\n\n";
+    "\tcd [?dir]      - change working directory to dir if you leave dir\n"
+    "                   blank it will change to home\n\n";
 
 static string ABOUT =
     "\nyassh (Yet Another Stupid Shell) is a simple shell made for fun\n"
@@ -184,12 +185,15 @@ void wdir(string *tokens) {
 void cd(string *tokens) {
   char pathbuf[BUFSIZ];
   if (!tokens[1]) {
-    fprintf(stderr, "path expected\n");
-    last_exit_status = 1;
-    return;
-  }
+    string home = getenv("HOME");
+    if (!home) {
+      fprintf(stderr, "HOME environment variable not set\n");
+      last_exit_status = 1;
+      return;
+    }
+    snprintf(pathbuf, BUFSIZ, "%s", home);
 
-  if (tokens[1][0] == '~') {
+  } else if (tokens[1][0] == '~') {
     string home = getenv("HOME");
     if (!home) {
       fprintf(stderr, "HOME environment variable not set\n");
