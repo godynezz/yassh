@@ -14,7 +14,7 @@
 
 #define VERSION "x.x.x"
 #define AUTHOR "godynezz"
-#define PROMPT "\033[30m~(8:> \033[0m"
+#define PROMPT "~(8:> "
 #define MAXBUF 2048
 #define MAXARG 128
 

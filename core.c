@@ -6,24 +6,23 @@
 #include "core.h"
 
 static string HELP_MESSAGE =
-    "\n\tversion: %s\n"
-    "\ttype [command] - print the type of command\n"
-    "\techo [string]  - print everything you pass to it\n"
-    "\texit [n]       - exit the shell with status n\n"
-    "\tcls            - clear the screen\n"
-    "\thelp [?opt]    - print this help message opt is optional and can be\n"
-    "\t                 `about` or just blank \n"
-
-    "\tpwd            - print working directory\n"
-    "\t?              - print the last exit status\n"
-    "\tcd [?dir]      - change working directory to dir if you leave dir\n"
-    "                   blank it will change to home\n\n";
+    "\nversion: %s\n"
+    "type [command] - print the type of command\n"
+    "echo [string]  - print everything you pass to it\n"
+    "exit [n]       - exit the shell with status n\n"
+    "cls            - clear the screen\n"
+    "help [?opt]    - print this help message opt can be\n"
+    "                `about` or just leave blank \n"
+    "pwd            - print working directory\n"
+    "?              - print the last exit status\n"
+    "cd [?dir]      - change working directory to dir if you leave dir\n"
+    "                blank it will change to home\n\n";
 
 static string ABOUT =
     "\nyassh (Yet Another Stupid Shell) is a simple shell made for fun\n"
-    "an learning porpose it is not secure and I don't plan to make it be,\n"
+    "and learning purposes. It is not secure and I don't plan to make it be,\n"
     "Do not use in production! \n\n"
-    "This shell can handle basic stuff, builtins and extenal programs\n"
+    "This shell can handle basic stuff, builtins and external programs\n"
     "on system PATH and relative to working directory, and the most important\n"
     "the prompt is a mouse. ~(8:>\n"
     "author: %s\n\n";
