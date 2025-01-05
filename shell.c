@@ -8,7 +8,7 @@
 
 u_int8_t last_exit_status = 0;
 
-int main() {
+int main(void) {
   setbuf(stdout, NULL);
   while (true) {
     char input[MAXBUF];
@@ -18,13 +18,8 @@ int main() {
     if (!fgets(input, MAXBUF, stdin)) break;
     input[strlen(input) - 1] = '\0';  // remove newline
 
-    string * tokens = parse_input(input);
-
-    if (!tokens) {
-      perror("malloc");
-      continue;
-    }
-
+    char ** tokens = parse_input(input);
+    
     if (!tokens || !tokens[0]) {
       free_args(tokens);
       continue;
@@ -52,4 +47,3 @@ int main() {
   putchar('\n');
   return 0;
 }
- 

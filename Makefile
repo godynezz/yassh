@@ -1,11 +1,11 @@
-CC = gcc
-CFLAGS = -static -Wall -Wextra -std=c11 -g
+CC = clang
+CFLAGS = -Wall -Wextra -Werror -Wpedantic
 SRCS = shell.c core.c
 DEFS = core.h
 EXEC = yassh
 OUTDIR = out
 
-.PHONY: all clean run
+.PHONY: all clean run install
 
 all: $(OUTDIR)/$(EXEC)
 
@@ -20,4 +20,5 @@ clean:
 	rm -rf $(OUTDIR)
 
 install: $(OUTDIR)/$(EXEC)
+	sudo rm -f -- /usr/local/bin/$(EXEC)
 	sudo install -m 555 $(OUTDIR)/$(EXEC) /usr/local/bin/$(EXEC)

@@ -1,3 +1,9 @@
+/*******************************************************************************
+ * name: core.c
+ * author: godynezz
+ * description: core functions definitions
+ ******************************************************************************/
+
 #ifndef CORE_H
 #define CORE_H
 
@@ -18,11 +24,9 @@
 #define MAXBUF 2048
 #define MAXARG 128
 
-typedef char *string;
-
-typedef struct command {
-  string name;
-  void (*function)(string *);
+struct command {
+  char *name;
+  void (*function)(char **);
 } command;
 
 #define ARR_SIZ(arr) sizeof(arr) / sizeof(arr[0])
@@ -30,29 +34,31 @@ typedef struct command {
 extern u_int8_t last_exit_status;
 
 // core
-bool exec_buildin(string *tokens);
-int exec_program(string *tokens);
+bool exec_buildin(char **tokens);
+int exec_program(char **tokens);
 
-string get_program_path(string command);
-bool is_builtin(string command);
+char *get_program_path(char *command);
+bool is_builtin(char *command);
 
-string *parse_input(string input);
-void print_arguments(string *tokens);
-void free_args(string *args);
+char **parse_input(char *input);
+void free_args(char **args);
 
 // helpers
-int is_sig_atoi_able(string str);
-int is_unsig_atoi_able(string str);
-void TODO();
+int is_sig_atoi_able(char *str);
+int is_unsig_atoi_able(char *str);
+
+// debug
+void TODO(void);
+void print_arguments(char **tokens);
 
 // builtins commands functions
-void shell_exit(string *tokens);
-void type(string *tokens);
-void echo(string *tokens);
-void cls(string *tokens);
-void help(string *tokens);
-void wdir(string *tokens);
-void cd(string *tokens);
-void last_status(string *tokens);
+void shell_exit(char **tokens);
+void type(char **tokens);
+void echo(char **tokens);
+void cls(char **tokens);
+void help(char **tokens);
+void wdir(char **tokens);
+void cd(char **tokens);
+void last_status(char **tokens);
 
 #endif
