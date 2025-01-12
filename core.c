@@ -237,10 +237,9 @@ int exec_program(char **tokens) {
     char *program_path = get_program_path(tokens[0]);
 
     if (program_path) {
-        // make exec_program return an int and set last_exit_status
         free(tokens[0]);
         tokens[0] = program_path;
-    } else if (!access(tokens[0], X_OK)) {
+    } else if (access(tokens[0], X_OK)) {
         return false;
     }
 
@@ -254,7 +253,6 @@ int exec_program(char **tokens) {
         waitpid(pid, &status, 0);
         last_exit_status = WEXITSTATUS(status);
     }
-
     return true;
 }
 
