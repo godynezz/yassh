@@ -24,9 +24,9 @@
 #define MAXBUF 2048
 #define MAXARG 128
 
-struct command {
-  char *name;
-  void (*function)(char **);
+typedef struct command {
+    char *name;
+    void (*function)(char **);
 } command;
 
 #define ARR_SIZ(arr) sizeof(arr) / sizeof(arr[0])
