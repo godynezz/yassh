@@ -5,20 +5,28 @@
  ******************************************************************************/
 #include "core.h"
 
-static char *HELP_MESSAGE =
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+static const char *HELP_MESSAGE =
     "\nversion: %s\n"
     "type [command] - print the type of command\n"
     "echo [string]  - print everything you pass to it\n"
-    "exit [?n]       - exit the shell with status n\n"
+    "exit [?n]      - exit the shell with status n\n"
     "cls            - clear the screen\n"
     "help [?opt]    - print this help message opt can be\n"
-    "                `about` or just leave blank \n"
+    "                 `about` or just leave blank \n"
     "pwd            - print working directory\n"
     "?              - print the last exit status\n"
     "cd [?dir]      - change working directory to dir if you leave dir\n"
-    "                blank it will change to home\n\n";
+    "                 blank it will change to home\n\n";
 
-static char *ABOUT =
+static const char *ABOUT =
     "\nyassh (Yet Another Stupid Shell) is a simple shell made for fun\n"
     "and learning purposes. It is not secure and I don't plan to make it be,\n"
     "Do not use in production! \n\n"
@@ -27,28 +35,24 @@ static char *ABOUT =
     "the prompt is a mouse. ~(8:>\n"
     "author: %s\n\n";
 
-static struct command builtins[] = {
-    {"pwd", &wdir},  {"cd", &cd},   {"exit", &shell_exit}, {"type", &type},
-    {"echo", &echo}, {"cls", &cls}, {"help", &help},       {"?", &last_status}};
+static const struct command builtins[] = {
+    {"pwd", &wdir},  {"cd", &cd},         {"exit", &shell_exit},
+    {"type", &type}, {"echo", &echo},     {"cls", &cls},
+    {"help", &help}, {"?", &last_status}, {NULL, NULL}};
 
-bool is_builtin(char *command) {
+int is_builtin(char *command) {
     for (size_t index = 0; index < ARR_SIZ(builtins); index++) {
-        if (!strcmp(command, builtins[index].name)) return true;
+        if (!strcmp(command, builtins[index].name)) return 1;
     }
-    return false;
+    return 0;
 }
 
 char *get_program_path(char *command) {
     char *path;
     char *path_copy;
     char *dir;
-    char *program_path;
-
-    program_path = (char *)malloc(MAXBUF);
-    if (!program_path) {
-        perror("malloc");
-        return NULL;
-    }
+    char *program_path = NULL;
+    size_t program_path_size;
 
     path = getenv("PATH");
     if (!path) {
@@ -59,50 +63,59 @@ char *get_program_path(char *command) {
     path_copy = strdup(path);
     if (!path_copy) {
         perror("strdup");
-        free(program_path);
         return NULL;
     }
 
     dir = strtok(path_copy, ":");
     while (dir) {
-        snprintf(program_path, MAXBUF, "%s/%s", dir, command);
+        program_path_size = strlen(dir) + strlen(command) + 2;
+        program_path = (char *)malloc(program_path_size);
+        if (!program_path) {
+            free(path_copy);
+            perror("malloc");
+            return NULL;
+        }
+
+        snprintf(program_path, program_path_size, "%s/%s", dir, command);
         if (!access(program_path, X_OK)) {
             free(path_copy);
             return program_path;
         }
+
         dir = strtok(NULL, ":");
+        free(program_path);
     }
 
     free(path_copy);
-    free(program_path);
     return NULL;
 }
 
+// Placeholder function
 void TODO(void) { printf("to be implemented\n"); }
 
 int is_sig_atoi_able(char *str) {
     if (*str == '-') str++;
-    if (!*str) return false;
+    if (!*str) return 0;
 
     while (*str) {
         if (!isdigit(*str))
-            return false;
+            return 0;
         else
             str++;
     }
-    return true;
+    return 1;
 }
 
 int is_unsig_atoi_able(char *str) {
-    if (!*str) return false;
+    if (!*str) return 0;
 
     while (*str) {
         if (!isdigit(*str))
-            return false;
+            return 0;
         else
             str++;
     }
-    return true;
+    return 1;
 }
 
 void print_arguments(char **tokens) {
@@ -240,7 +253,7 @@ int exec_program(char **tokens) {
         free(tokens[0]);
         tokens[0] = program_path;
     } else if (access(tokens[0], X_OK)) {
-        return false;
+        return 0;
     }
 
     pid_t pid;
@@ -253,20 +266,20 @@ int exec_program(char **tokens) {
         waitpid(pid, &status, 0);
         last_exit_status = WEXITSTATUS(status);
     }
-    return true;
+    return 1;
 }
 
-bool exec_buildin(char **tokens) {
+int exec_buildin(char **tokens) {
     for (size_t index = 0; builtins[index].name; index++) {
         if (!strcmp(tokens[0], builtins[index].name)) {
             builtins[index].function(tokens);
-            return true;
+            return 1;
         }
     }
-    return false;
+    return 0;
 }
 
-// i don't know how to do it better
+
 char **parse_input(char *input) {
     char **tokens = malloc(sizeof(char *) * MAXARG);
     char tmp[MAXBUF];
@@ -275,7 +288,7 @@ char **parse_input(char *input) {
     int argindex;
 
     for (argindex = index = 0;
-         (cur_char = input[index]) && argindex < (MAXARG - 1);
+         (cur_char = input[index]) != '\0' && argindex < (MAXARG - 1);
          index++, argindex++, memset(tmp, 0, MAXBUF)) {
         if (isspace(cur_char)) {
             while (isspace(cur_char = input[index])) {

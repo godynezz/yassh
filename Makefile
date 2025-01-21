@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -Wall -Wextra -Werror -Wpedantic
+CFLAGS =  -Wall -Wextra -Werror -Wpedantic
 SRCS = shell.c core.c
 DEFS = core.h
 EXEC = yassh
@@ -15,6 +15,9 @@ $(OUTDIR)/$(EXEC): $(SRCS) $(DEFS)
 
 run: $(OUTDIR)/$(EXEC)
 	$(OUTDIR)/$(EXEC)
+
+rundbg: $(OUTDIR)/$(EXEC)
+	gdb $(OUTDIR)/$(EXEC)
 
 clean:
 	rm -rf $(OUTDIR)

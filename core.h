@@ -1,5 +1,5 @@
 /*******************************************************************************
- * name: core.c
+ * name: core.h
  * author: godynezz
  * description: core functions definitions
  ******************************************************************************/
@@ -8,15 +8,6 @@
 #define CORE_H
 
 #define _GNU_SOURCE
-
-#include <ctype.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
 
 #define VERSION "x.x.x"
 #define AUTHOR "godynezz"
@@ -29,21 +20,21 @@ typedef struct command {
     void (*function)(char **);
 } command;
 
-#define ARR_SIZ(arr) sizeof(arr) / sizeof(arr[0])
+#define ARR_SIZ(arr) (sizeof(arr) / sizeof(arr[0]))
 
-extern u_int8_t last_exit_status;
+extern unsigned char last_exit_status;
 
 // core
-bool exec_buildin(char **tokens);
+int exec_buildin(char **tokens);
 int exec_program(char **tokens);
 
 char *get_program_path(char *command);
-bool is_builtin(char *command);
+int is_builtin(char *command);
 
 char **parse_input(char *input);
 void free_args(char **args);
 
-// helpers
+// validation
 int is_sig_atoi_able(char *str);
 int is_unsig_atoi_able(char *str);
 
@@ -51,7 +42,7 @@ int is_unsig_atoi_able(char *str);
 void TODO(void);
 void print_arguments(char **tokens);
 
-// builtins commands functions
+// builtins commands
 void shell_exit(char **tokens);
 void type(char **tokens);
 void echo(char **tokens);
