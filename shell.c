@@ -10,22 +10,17 @@
 
 #include "core.h"
 #include "errno.h"
-
+#include "signal.h"
 unsigned char last_exit_status = 0;
 
-// TODO:
-// if Ctrl+c signal is sent the shell exits instead of stoping the child
-// process and return to the prompt
-
-// TODO:
-// parse_input: implement with variable size  arrays so MAXBUF and MAXARG are
-// not needed
+void handle_sig(int sig);
 
 int main(void) {
     size_t buffer_size, nread;
     char** tokens;
     char* input;
 
+    signal(SIGINT, handle_sig);
     setbuf(stdout, NULL);
 
     while (1) {
@@ -57,4 +52,11 @@ int main(void) {
 
     putchar('\n');
     return 0;
+}
+
+void handle_sig(int sig) {
+    if (sig == SIGINT) {
+        printf("\n");
+        printf(PROMPT);
+    }
 }
