@@ -279,17 +279,29 @@ int exec_buildin(char **tokens) {
     return 0;
 }
 
-
+// seems not angry
 char **parse_input(char *input) {
-    char **tokens = malloc(sizeof(char *) * MAXARG);
-    char tmp[MAXBUF];
-    char cur_char;
-    int index;
-    int argindex;
+    size_t tokens_size = 2;
+    size_t tmp_size = 12;
 
-    for (argindex = index = 0;
-         (cur_char = input[index]) != '\0' && argindex < (MAXARG - 1);
-         index++, argindex++, memset(tmp, 0, MAXBUF)) {
+    char **tokens = malloc(sizeof(char *) * tokens_size);
+    char *tmp = malloc(tmp_size);
+    if (!tokens || !tmp) {
+        perror("malloc");
+        return NULL;
+    }
+    char cur_char;
+    size_t index;
+    size_t argindex;
+    size_t tmp_index;
+
+    for (argindex = index = 0; (cur_char = input[index]) != '\0';
+         index++, argindex++, memset(tmp, 0, tmp_size)) {
+        if (argindex >= tokens_size - 1) {
+            tokens_size *= 2;
+            tokens = realloc(tokens, sizeof(char *) * tokens_size);
+        }
+
         if (isspace(cur_char)) {
             while (isspace(cur_char = input[index])) {
                 index++;
@@ -298,14 +310,20 @@ char **parse_input(char *input) {
 
         if (cur_char == '"') {
             index++;
-            int tmp_index = 0;
-            for (; (cur_char = input[index]) != '\0' && cur_char != '"' &&
-                   tmp_index < MAXBUF;
+            tmp_index = 0;
+            for (; (cur_char = input[index]) != '\0' && cur_char != '"';
                  index++) {
+                if (tmp_index >= tmp_size - 1) {
+                    tmp_size *= 2;
+                    tmp = realloc(tmp, tmp_size);
+                }
+
                 tmp[tmp_index++] = cur_char;
             }
+            
             index++;
             tmp[tmp_index++] = '\0';
+            
             if (cur_char != '"') {
                 printf("shell error: syntax error\n");
                 return NULL;
@@ -316,10 +334,13 @@ char **parse_input(char *input) {
 
         if (cur_char == '\'') {
             index++;
-            int tmp_index = 0;
-            for (; (cur_char = input[index]) != '\0' && cur_char != '\'' &&
-                   (tmp_index) < MAXBUF;
+            tmp_index = 0;
+            for (; (cur_char = input[index]) != '\0' && cur_char != '\'';
                  index++) {
+                if (tmp_index >= tmp_size - 1) {
+                    tmp_size *= 2;
+                    tmp = realloc(tmp, tmp_size);
+                }
                 tmp[tmp_index++] = cur_char;
             }
             index++;
@@ -333,11 +354,15 @@ char **parse_input(char *input) {
         }
 
         if (!isspace(cur_char)) {
-            int tmp_index = 0;
-            while (!isspace(cur_char = input[index]) && cur_char != '\0' &&
-                   tmp_index < MAXBUF) {
+            tmp_index = 0;
+            while (!isspace(cur_char = input[index]) && cur_char != '\0') {
                 if (cur_char == '\\' && input[index + 1] != '\0') {
                     cur_char = input[++index];
+                }
+
+                if (tmp_index >= tmp_size - 1) {
+                    tmp_size *= 2;
+                    tmp = realloc(tmp, tmp_size);
                 }
                 tmp[tmp_index++] = cur_char;
                 index++;
@@ -347,6 +372,7 @@ char **parse_input(char *input) {
             continue;
         }
     }
+    free(tmp);
     tokens[argindex] = NULL;
     return tokens;
 }

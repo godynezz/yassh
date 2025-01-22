@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS =  -Wall -Wextra -Werror -Wpedantic
+CFLAGS =  -g -Wall -Wextra -Werror -Wpedantic
 SRCS = shell.c core.c
 DEFS = core.h
 EXEC = yassh
