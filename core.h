@@ -32,7 +32,7 @@ char *get_program_path(char *command);
 int is_builtin(char *command);
 
 char **parse_input(char *input);
-void free_args(char **args);
+void free_tokens(char **args);
 
 // validation
 int is_sig_atoi_able(char *str);
