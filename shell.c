@@ -19,11 +19,13 @@ void handle_sig(int sig);
 unsigned char last_exit_status = 0;
 int inputfd;
 
-int main(int argc, const char** argv) {
+// i dont know where to go from here
+
+int main(int argc, const char **argv) {
     size_t buffer_size, nread;
-    FILE* input_stream;
-    char** tokens;
-    char* input;
+    FILE *input_stream;
+    char **tokens;
+    char *input;
 
     if (argc == 2) {
         input_stream = fopen(argv[1], "r");
@@ -31,10 +33,12 @@ int main(int argc, const char** argv) {
             printf("couldn't open file");
             return 1;
         }
-    } else if (argc > 2) {
+    }
+    else if (argc > 2) {
         printf("usage: yassh <script path>");
         return 1;
-    } else {
+    }
+    else {
         input_stream = stdin;
     }
 
@@ -59,14 +63,15 @@ int main(int argc, const char** argv) {
             if (errno == EINVAL || errno == ENOMEM) {
                 perror("getline");
                 return 1;
-            } else {
+            }
+            else {
                 putchar('\n');
                 return 0;
             }
         }
 
         if (nread > 0 && input[nread - 1] == '\n')
-            input[nread -1] = '\0';
+            input[nread - 1] = '\0';
 
         tokens = parse_input(input);
         if (!tokens || !tokens[0]) goto clean;

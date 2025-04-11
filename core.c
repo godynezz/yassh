@@ -14,44 +14,44 @@
 #include <unistd.h>
 
 static const char HELP_MESSAGE[] =
-    "\nversion: %s\n"
-    "type [command] - print the type of command\n"
-    "echo [string]  - print everything you pass to it\n"
-    "exit [?n]      - exit the shell with status n\n"
-    "cls            - clear the screen\n"
-    "help [?opt]    - print this help message opt can be\n"
-    "                 `about` or just leave blank \n"
-    "pwd            - print working directory\n"
-    "?              - print the last exit status\n"
-    "cd [?dir]      - change working directory to dir if you leave dir\n"
-    "                 blank it will change to home\n\n";
+"\nversion: %s\n"
+"type [command] - print the type of command\n"
+"echo [string]  - print everything you pass to it\n"
+"exit [?n]      - exit the shell with status n\n"
+"cls            - clear the screen\n"
+"help [?opt]    - print this help message opt can be\n"
+"                 `about` or just leave blank \n"
+"pwd            - print working directory\n"
+"?              - print the last exit status\n"
+"cd [?dir]      - change working directory to dir if you leave dir\n"
+"                 blank it will change to home\n\n";
 
 static const char ABOUT[] =
-    "\nyassh (Yet Another Stupid Shell) is a simple shell made for fun\n"
-    "and learning purposes. It is not secure and I don't plan to make it be,\n"
-    "Do not use in production! \n\n"
-    "This shell can handle basic stuff, builtins and external programs\n"
-    "on system PATH and relative to working directory, and the most important\n"
-    "the prompt is a mouse. ~(8:>\n"
-    "author: %s\n\n";
+"\nyassh (Yet Another Stupid Shell) is a simple shell made for fun\n"
+"and learning purposes. It is not secure and I don't plan to make it be,\n"
+"Do not use in production! \n\n"
+"This shell can handle basic stuff, builtins and external programs\n"
+"on system PATH and relative to working directory, and the most important\n"
+"the prompt is a mouse. ~(8:>\n"
+"author: %s\n\n";
 
 static const struct command builtins[] = {
     {"pwd", &wdir},  {"cd", &cd},         {"exit", &shell_exit},
     {"type", &type}, {"echo", &echo},     {"cls", &cls},
-    {"help", &help}, {"?", &last_status}, {NULL, NULL}};
+    {"help", &help}, {"?", &last_status}, {NULL, NULL} };
 
-int is_builtin(char* command) {
+int is_builtin(char *command) {
     for (size_t index = 0; index < ARR_SIZ(builtins); index++) {
         if (!strcmp(command, builtins[index].name)) return 1;
     }
     return 0;
 }
 
-char* get_program_path(char* command) {
-    char* path;
-    char* path_copy;
-    char* dir;
-    char* program_path = NULL;
+char *get_program_path(char *command) {
+    char *path;
+    char *path_copy;
+    char *dir;
+    char *program_path = NULL;
     size_t program_path_size;
 
     path = getenv("PATH");
@@ -68,7 +68,7 @@ char* get_program_path(char* command) {
     dir = strtok(path_copy, ":");
     while (dir) {
         program_path_size = strlen(dir) + strlen(command) + 2;
-        program_path = (char*)malloc(program_path_size);
+        program_path = (char *)malloc(program_path_size);
         if (!program_path) {
             free(path_copy);
             perror("malloc");
@@ -94,7 +94,7 @@ void TODO(void) {
     printf("to be implemented\n");
 }
 
-int is_sig_atoi_able(char* str) {
+int is_sig_atoi_able(char *str) {
     if (*str == '-') str++;
     if (!*str) return 0;
 
@@ -107,7 +107,7 @@ int is_sig_atoi_able(char* str) {
     return 1;
 }
 
-int is_unsig_atoi_able(char* str) {
+int is_unsig_atoi_able(char *str) {
     if (!*str) return 0;
 
     while (*str) {
@@ -119,14 +119,14 @@ int is_unsig_atoi_able(char* str) {
     return 1;
 }
 
-void print_arguments(char** tokens) {
+void print_arguments(char **tokens) {
     for (int i = 0; tokens[i]; i++) {
         printf("%s ", tokens[i]);
     }
     printf("\n");
 }
 
-void shell_exit(char** tokens) {
+void shell_exit(char **tokens) {
     int exit_status = 0;
     if (tokens[2]) {
         printf("too many arguments\n");
@@ -143,7 +143,7 @@ void shell_exit(char** tokens) {
     exit(exit_status);
 }
 
-void type(char** tokens) {
+void type(char **tokens) {
     if (!tokens[1]) {
         printf("no name given\n");
         return;
@@ -158,7 +158,7 @@ void type(char** tokens) {
         return;
     }
 
-    char* tmp = get_program_path(tokens[1]);
+    char *tmp = get_program_path(tokens[1]);
     if (tmp) {
         printf("%s is %s\n", tokens[1], tmp);
         free(tmp);
@@ -167,18 +167,19 @@ void type(char** tokens) {
     printf("command not found: %s\n", tokens[1]);
 }
 
-void echo(char** tokens) {
+void echo(char **tokens) {
     for (tokens++; *tokens;) {
         printf("%s", *tokens);
         if (*tokens++) {
             printf(" ");
-        } else
+        }
+        else
             break;
     }
     printf("\n");
 }
 
-void cls(char** tokens) {
+void cls(char **tokens) {
     if (tokens[1]) {
         printf("too many arguments\n");
         return;
@@ -186,17 +187,18 @@ void cls(char** tokens) {
     printf("\033[H\033[2J");
 }
 
-void help(char** tokens) {
+void help(char **tokens) {
     if (tokens[1]) {
         if (!strcmp(tokens[1], "about")) {
             printf(ABOUT, AUTHOR);
             return;
         }
-    } else
+    }
+    else
         printf(HELP_MESSAGE, VERSION);
 }
 
-void wdir(char** tokens) {
+void wdir(char **tokens) {
     char cwd[BUFSIZ];
 
     if (tokens[1]) {
@@ -205,16 +207,17 @@ void wdir(char** tokens) {
     }
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
         puts(cwd);
-    } else {
+    }
+    else {
         perror("getcwd() error");
         return;
     }
 }
 
-void cd(char** tokens) {
+void cd(char **tokens) {
     char pathbuf[BUFSIZ];
     if (!tokens[1]) {
-        char* home = getenv("HOME");
+        char *home = getenv("HOME");
         if (!home) {
             fprintf(stderr, "HOME environment variable not set\n");
             last_exit_status = 1;
@@ -222,27 +225,30 @@ void cd(char** tokens) {
         }
         snprintf(pathbuf, BUFSIZ, "%s", home);
 
-    } else if (tokens[1][0] == '~') {
-        char* home = getenv("HOME");
+    }
+    else if (tokens[1][0] == '~') {
+        char *home = getenv("HOME");
         if (!home) {
             fprintf(stderr, "HOME environment variable not set\n");
             last_exit_status = 1;
             return;
         }
         snprintf(pathbuf, BUFSIZ, "%s/%s", home, tokens[1] + 1);
-    } else {
+    }
+    else {
         snprintf(pathbuf, BUFSIZ, "%s", tokens[1]);
     }
 
     if (chdir(pathbuf) != 0) {
         perror("cd");
         last_exit_status = 1;
-    } else {
+    }
+    else {
         last_exit_status = 0;
     }
 }
 
-void last_status(char** tokens) {
+void last_status(char **tokens) {
     if (tokens[1]) {
         printf("too many arguments\n");
         return;
@@ -250,13 +256,14 @@ void last_status(char** tokens) {
     printf("status code: %d\n", last_exit_status);
 }
 
-int exec_program(char** tokens) {
+int exec_program(char **tokens) {
     // search for program in PATH
-    char* program_path = get_program_path(tokens[0]);
+    char *program_path = get_program_path(tokens[0]);
     if (!program_path) {
         if (!access(tokens[0], X_OK)) {
             program_path = strdup(tokens[0]);
-        } else
+        }
+        else
             return 0;
     }
 
@@ -268,14 +275,15 @@ int exec_program(char** tokens) {
     }
     if (pid < 0) {
         perror("fork");
-    } else {
+    }
+    else {
         waitpid(pid, &status, 0);
         last_exit_status = WEXITSTATUS(status);
     }
     return 1;
 }
 
-int exec_buildin(char** tokens) {
+int exec_buildin(char **tokens) {
     for (size_t index = 0; builtins[index].name; index++) {
         if (!strcmp(tokens[0], builtins[index].name)) {
             builtins[index].function(tokens);
@@ -286,14 +294,14 @@ int exec_buildin(char** tokens) {
 }
 
 // seems not angry
-char** parse_input(char* input) {
+char **parse_input(char *input) {
     size_t tokens_size, tmp_size, input_index, token_index, tmp_index;
     char cur_char;
 
     tokens_size = 2;
     tmp_size = 12;
-    char** tokens = malloc(sizeof(char*) * tokens_size);
-    char* tmp = malloc(tmp_size);
+    char **tokens = malloc(sizeof(char *) * tokens_size);
+    char *tmp = malloc(tmp_size);
 
     if (!tokens || !tmp) {
         perror("malloc");
@@ -301,10 +309,10 @@ char** parse_input(char* input) {
     }
 
     for (token_index = input_index = 0; (cur_char = input[input_index]) != '\0';
-         input_index++, token_index++) {
+        input_index++, token_index++) {
         if (token_index >= tokens_size - 1) {
             tokens_size *= 2;
-            tokens = realloc(tokens, sizeof(char*) * tokens_size);
+            tokens = realloc(tokens, sizeof(char *) * tokens_size);
         }
 
         while (isspace(cur_char))
@@ -314,7 +322,7 @@ char** parse_input(char* input) {
             input_index++;
             tmp_index = 0;
             for (; (cur_char = input[input_index]) != '\0' && cur_char != '"';
-                 input_index++) {
+                input_index++) {
                 if (tmp_index >= tmp_size - 1) {
                     tmp_size *= 2;
                     tmp = realloc(tmp, tmp_size);
@@ -341,7 +349,7 @@ char** parse_input(char* input) {
             input_index++;
             tmp_index = 0;
             for (; (cur_char = input[input_index]) != '\0' && cur_char != '\'';
-                 input_index++) {
+                input_index++) {
                 if (tmp_index >= tmp_size - 1) {
                     tmp_size *= 2;
                     tmp = realloc(tmp, tmp_size);
@@ -364,7 +372,7 @@ char** parse_input(char* input) {
         if (!isspace(cur_char)) {
             tmp_index = 0;
             while (!isspace(cur_char = input[input_index]) &&
-                   cur_char != '\0') {
+                cur_char != '\0') {
                 if (cur_char == '\\' && input[input_index + 1] != '\0') {
                     cur_char = input[++input_index];
                 }
@@ -386,7 +394,7 @@ char** parse_input(char* input) {
     return tokens;
 }
 
-void free_tokens(char** tokens) {
+void free_tokens(char **tokens) {
     if (tokens) {
         for (int i = 0; tokens[i]; i++)
             free(tokens[i]);
