@@ -16,8 +16,8 @@
 #define MAXARG 128
 
 typedef struct command {
-    char *name;
-    void (*function)(char **);
+    char* name;
+    void (*function)(char**);
 } command;
 
 #define ARR_SIZ(arr) (sizeof(arr) / sizeof(arr[0]))
@@ -25,31 +25,31 @@ typedef struct command {
 extern unsigned char last_exit_status;
 
 // core
-int exec_buildin(char **tokens);
-int exec_program(char **tokens);
+int exec_buildin(char** tokens);
+int exec_program(char** tokens);
 
-char *get_program_path(char *command);
-int is_builtin(char *command);
+char* get_program_path(char* command);
+int is_builtin(char* command);
 
-char **parse_input(char *input);
-void free_tokens(char **args);
+char** parse_input(char* input);
+void free_tokens(char** args);
 
 // validation
-int is_sig_atoi_able(char *str);
-int is_unsig_atoi_able(char *str);
+int is_sig_atoi_able(char* str);
+int is_unsig_atoi_able(char* str);
 
 // debug
 void TODO(void);
-void print_arguments(char **tokens);
+void print_arguments(char** tokens);
 
 // builtins commands
-void shell_exit(char **tokens);
-void type(char **tokens);
-void echo(char **tokens);
-void cls(char **tokens);
-void help(char **tokens);
-void wdir(char **tokens);
-void cd(char **tokens);
-void last_status(char **tokens);
+void shell_exit(char** tokens);
+void type(char** tokens);
+void echo(char** tokens);
+void cls(char** tokens);
+void help(char** tokens);
+void wdir(char** tokens);
+void cd(char** tokens);
+void last_status(char** tokens);
 
 #endif
